@@ -1,12 +1,19 @@
 package com.benten.lastfmapp.presentation.splash
 
+import android.animation.Animator
+import android.animation.ValueAnimator
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
+import androidx.core.animation.addListener
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
 import com.benten.lastfmapp.databinding.FragmentSplashBinding
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SplashFragment : Fragment() {
     private var _binding: FragmentSplashBinding? = null
     private val binding get() = _binding!!
@@ -18,6 +25,49 @@ class SplashFragment : Fragment() {
     ): View? {
         _binding = FragmentSplashBinding.inflate(inflater, container, false)
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        animateLogo()
+    }
+
+    private fun animateLogo() {
+        binding.ivLogo.alpha = 0f
+        val alphaAnimator = ValueAnimator.ofFloat(0f, 1f).apply {
+            duration = 2000L
+            interpolator = AccelerateDecelerateInterpolator()
+        }
+        alphaAnimator.addUpdateListener {
+            val animatedValue = it.animatedValue as Float
+            binding.ivLogo.alpha = animatedValue
+            val scaleFraction = 2 - (1 - animatedValue)
+            binding.ivLogo.scaleX = scaleFraction
+            binding.ivLogo.scaleY = scaleFraction
+        }
+
+        alphaAnimator.addListener(object : Animator.AnimatorListener {
+            override fun onAnimationStart(p0: Animator?) {
+            }
+
+            override fun onAnimationEnd(p0: Animator?) {
+               goToGenresFragment()
+            }
+
+            override fun onAnimationCancel(p0: Animator?) {
+            }
+
+            override fun onAnimationRepeat(p0: Animator?) {
+            }
+
+        })
+
+        alphaAnimator.start()
+
+    }
+
+    fun goToGenresFragment() {
+        findNavController().navigate(SplashFragmentDirections.actionSplashFragmentToGenresFragment())
     }
 
     override fun onDestroyView() {

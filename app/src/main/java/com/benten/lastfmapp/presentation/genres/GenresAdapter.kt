@@ -17,6 +17,12 @@ class GenresAdapter : RecyclerView.Adapter<GenresAdapter.GenresHolder>() {
         )
     }
 
+    fun updateAll(list: List<GenreUIModel>) {
+        this.itemList.clear()
+        this.itemList.addAll(list)
+        notifyDataSetChanged()
+    }
+
     override fun onBindViewHolder(holder: GenresHolder, position: Int) {
         holder.bind(itemList[position])
 
